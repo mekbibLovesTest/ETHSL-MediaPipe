@@ -1,10 +1,8 @@
 import cv2
 import os
 import errno
-actions = os.listdir('videos')
-print(actions)
 
-def FrameCapture(video,a,path):
+def FrameCapture(video,a):
   
     # Path to video file
     vidObj = cv2.VideoCapture("./videos/{}/{}".format(a,video))
@@ -22,7 +20,7 @@ def FrameCapture(video,a,path):
         if image is None:
             break 
         # Saves the frames with frame-count
-        cv2.imwrite("{}/{}{}frame%d.jpg".format(path,video,a) % count, image)
+        cv2.imwrite("frames/{}/{}frame%d.jpg".format(a,video) % count, image)
   
         count += 1
     vidObj.release()
@@ -36,9 +34,11 @@ except OSError as e:
     else:
         raise
 
+actions = os.listdir('videos')
+print(actions)
 for a in actions:
     videos = os.listdir('videos/{}'.format(a))
-    
+    print(a)
     path = os.path.join('frames',a)
     try:
         os.mkdir(path)
@@ -48,15 +48,6 @@ for a in actions:
         else:
             raise
     for video in videos:
-        path = os.path.join('frames/{}'.format(a),video)
-        print(path)
-        try:
-            os.mkdir(path)
-        except OSError as e:
-            if e.errno == errno.EEXIST:
-                print('Directory already exists.')
-            else:
-                print(e.errno)
-                raise
-        FrameCapture(video,a,path)
+        print(video)
+        FrameCapture(video,a)
 
