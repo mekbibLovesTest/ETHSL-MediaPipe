@@ -8,7 +8,7 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
 # For static images:
-cap = cv2.VideoCapture('/home/mekbibtarekegn/ETHSL-MediaPipe/frames/መቼ/26491.mp4frame0.jpg')
+cap = cv2.VideoCapture('/home/mekbibtarekegn/ETHSL-MediaPipe/frames/መቼ/26491.mp4frame13.jpg')
 with mp_holistic.Holistic(
     static_image_mode=True,
     min_detection_confidence=0.5,
