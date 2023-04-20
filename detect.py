@@ -3,6 +3,10 @@ import mediapipe as mp
 import pandas as pd
 import pickle
 import numpy as np
+from PIL import Image
+from PIL import ImageFont
+from PIL import ImageDraw 
+
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
@@ -10,7 +14,7 @@ mp_holistic = mp.solutions.holistic
 with open('body_language.pkl', 'rb') as f:
     model = pickle.load(f)
 
-font = '/home/mekbibtarekegn/Downloads/Chiret-Regular.ttf'
+font_src = './washrab.ttf'
 #For webcam input:
 cap = cv2.VideoCapture(0)
 with mp_holistic.Holistic(
@@ -72,28 +76,46 @@ with mp_holistic.Holistic(
         body_language_prob = model.predict_proba(X)[0]
         print(body_language_class, np.argmax(body_language_prob))
         
-        
-        cv2.putText(image, body_language_class, 
-             font, 1, (255, 255, 255), 2, cv2.LINE_AA)
+        # Grab ear coords
+        coords = tuple(np.multiply(
+                      np.array(
+                      (results.pose_landmarks.landmark[mp_holistic.PoseLandmark.LEFT_EAR].x, 
+                      results.pose_landmarks.landmark[mp_holistic.PoseLandmark.LEFT_EAR].y))
+                      , [640,480]).astype(int))
             
-            # Get status box
-        #cv2.rectangle(image, (0,0), (250, 60), (245, 117, 16), -1)
+      
+        # Flip the image horizontally for a selfie-view display.
+        image = cv2.flip(image, 1)
+        if not (body_language_class.split(' ')[0] == 'nothing'):
+          image= cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+          pil_img = Image.fromarray(image)
+
+          draw = ImageDraw.Draw(pil_img)
+          # font = ImageFont.truetype(<font-file>, <font-size>)
+          font = ImageFont.truetype(font_src, 50)
+          # draw.text((x, y),"Sample Text",(r,g,b))
+          text = "{}  {}".format(body_language_class.split(' ')[0],str(round(body_language_prob[np.argmax(body_language_prob)],2)))
+          draw.text((0, 0),text,(255,255,255),font=font)
+          image= np.array(pil_img)
+          image= cv2.cvtColor(image, cv2.COLOR_RGB2BGR)    
+        # # Get status box
+        # cv2.rectangle(image, (0,0), (250, 60), (245, 117, 16), -1)
             
-            # Display Class
-        #cv2.putText(image, 'CLASS'
-        #    , (95,12), font, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
-        #cv2.putText(image, body_language_class, 
-        #            (90,40), font, 1, (255, 255, 255), 2, cv2.LINE_AA)
+        # # Display Class
+        # cv2.putText(image, 'CLASS'
+        #     , (95,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+        # cv2.putText(image, body_language_class.split(' ')[0]
+        #     , (90,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
             
-            # Display Probability
-        #cv2.putText(image, 'PROB'
-        #    , (15,12), font, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
-        #cv2.putText(image, str(round(body_language_prob[np.argmax(body_language_prob)],2))
-        #    , (10,40), font, 1, (255, 255, 255), 2, cv2.LINE_AA)        
+        # # Display Probability
+        # cv2.putText(image, 'PROB'
+        #     , (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
+        # cv2.putText(image, str(round(body_language_prob[np.argmax(body_language_prob)],2))
+        #     , (10,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)           
     except:
         pass
     # Flip the image horizontally for a selfie-view display.
-    cv2.imshow('MediaPipe Holistic', cv2.flip(image, 1))
+    cv2.imshow('MediaPipe Holistic', image)
     if cv2.waitKey(5) & 0xFF == 27:
       break
    cap.release()
