@@ -11,7 +11,7 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
-with open('body_language.pkl', 'rb') as f:
+with open('ETHSLv1.pkl', 'rb') as f:
     model = pickle.load(f)
 
 font_src = './washrab.ttf'

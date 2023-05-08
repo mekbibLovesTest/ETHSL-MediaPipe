@@ -8,7 +8,7 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
 
-actions = os.listdir('frames')
+actions = ['መታጠቢያ ቤት']
 
 
     
@@ -18,10 +18,10 @@ with mp_holistic.Holistic(
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5) as holistic:
    for action in actions:
-    frames = os.listdir('frames/{}'.format(action))
+    frames = os.listdir('frames-processed/{}'.format(action))
     for frame in frames:
          
-        cap = cv2.VideoCapture('/home/mekbibtarekegn/ETHSL-MediaPipe/frames/{}/{}'.format(action,frame)) 
+        cap = cv2.VideoCapture('/home/mekbibtarekegn/ETHSL-MediaPipe/frames-processed/{}/{}'.format(action,frame)) 
         while cap.isOpened():
             success, image = cap.read()
             if not success:
