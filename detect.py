@@ -11,7 +11,7 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
-with open('ETHSLv1.pkl', 'rb') as f:
+with open('ETHSLv3.pkl', 'rb') as f:
     model = pickle.load(f)
 
 font_src = './washrab.ttf'
@@ -72,21 +72,13 @@ with mp_holistic.Holistic(
         row = pose +lh+rh
         # Make Detections
         X = pd.DataFrame([row])
-        body_language_class = model.predict(X)[0]
-        body_language_prob = model.predict_proba(X)[0]
-        print(body_language_class, np.argmax(body_language_prob))
+        Sign_language_class = model.predict(X)[0]
+        Sign_language_prob = model.predict_proba(X)[0]
+        print(Sign_language_class, np.argmax(Sign_language_prob))
         
-        # Grab ear coords
-        coords = tuple(np.multiply(
-                      np.array(
-                      (results.pose_landmarks.landmark[mp_holistic.PoseLandmark.LEFT_EAR].x, 
-                      results.pose_landmarks.landmark[mp_holistic.PoseLandmark.LEFT_EAR].y))
-                      , [640,480]).astype(int))
-            
-      
         # Flip the image horizontally for a selfie-view display.
         image = cv2.flip(image, 1)
-        if not (body_language_class.split(' ')[0] == 'nothing'):
+        if not (Sign_language_class.split(' ')[0] == 'nothing'):
           image= cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
           pil_img = Image.fromarray(image)
 
@@ -94,7 +86,7 @@ with mp_holistic.Holistic(
           # font = ImageFont.truetype(<font-file>, <font-size>)
           font = ImageFont.truetype(font_src, 50)
           # draw.text((x, y),"Sample Text",(r,g,b))
-          text = "{}  {}".format(body_language_class.split(' ')[0],str(round(body_language_prob[np.argmax(body_language_prob)],2)))
+          text = "{}  {}".format(Sign_language_class.split(' ')[0],str(round(Sign_language_prob[np.argmax(Sign_language_prob)],2)))
           draw.text((0, 0),text,(255,255,255),font=font)
           image= np.array(pil_img)
           image= cv2.cvtColor(image, cv2.COLOR_RGB2BGR)    
@@ -104,13 +96,13 @@ with mp_holistic.Holistic(
         # # Display Class
         # cv2.putText(image, 'CLASS'
         #     , (95,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
-        # cv2.putText(image, body_language_class.split(' ')[0]
+        # cv2.putText(image, Sign_language_class.split(' ')[0]
         #     , (90,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
             
         # # Display Probability
         # cv2.putText(image, 'PROB'
         #     , (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 1, cv2.LINE_AA)
-        # cv2.putText(image, str(round(body_language_prob[np.argmax(body_language_prob)],2))
+        # cv2.putText(image, str(round(Sign_language_prob[np.argmax(Sign_language_prob)],2))
         #     , (10,40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)           
     except:
         pass
