@@ -18,12 +18,16 @@ def receive_json():
     try:
         left = convertLandmarkToPython(json_data["left"],True)
         print("left")
+        # print(left)
     except Exception as e:
+        print("left error")
         print(e)
     try:
         right = convertLandmarkToPython(json_data["right"],True)
         print("right")
+        # print(right)
     except Exception as e:
+        print("right error")
         print(e)
     
     prediction = predict(pose,left,right)
@@ -38,16 +42,14 @@ def convertLandmarkToPython(content,hand):
     if not hand:
         modified_string = modified_string.replace('presence:', '"presence":')
         modified_string = modified_string.replace('visibility:', ',"visibility":')
-    modified_string = modified_string.replace('x:', ',"x":')
+        modified_string = modified_string.replace('x:', ',"x":')
+    modified_string = modified_string.replace('x:', '"x":')
     modified_string = modified_string.replace('y:', ',"y":')
     modified_string = modified_string.replace('z:', ',"z":')
 
-    # Add ',' after every '}' except the last one
-    #modified_string = modified_string.rsplit('}', 1)
     modified_string = modified_string.replace('}', '},') + modified_string[1]
     modified_string = modified_string.rsplit(',', 1)[0]
-    #modified_string = modified_string.rstrip('l')
-    # dictionary = eval("{"+modified_string+"}")
+
     dictionary = json.loads('{' + modified_string + '}')
     return dictionary
 
